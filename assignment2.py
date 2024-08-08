@@ -5,10 +5,16 @@ def parse_command_args() -> object:
   "Set up argparse here. Call this function inside main."
   parser = argparse.ArgumentParser(description="Memory Visualiser -- See Memory Usage Report with bar charts",epilog="Copyright 2023")
   parser.add_argument("-l", "--length", type=int, default=20, help="Specify the length of the graph. Default is 20.")
+
+#Added argparse setup in parse_command_args() function
+  parser.add_argument("-r", "--human-readable", action="store_true", help="Show memory in a human-readable format (e.g., MiB, GiB).")
+
   # Make this entry for human-readable. Check the docs to make it a True/False option.
   parser.add_argument("program", type=str, nargs='?', help="if a program is specified, show memory use of all associated processes. Show only total use if not.")
   args = parser.parse_args()
   return args
+
+
 def percent_to_graph(percent: float, length: int=20) -> str:
   "turns a percent 0.0 - 1.0 into a bar graph"
   pass
