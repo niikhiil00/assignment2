@@ -6,7 +6,7 @@ def parse_command_args() -> object:
   parser = argparse.ArgumentParser(description="Memory Visualiser -- See Memory Usage Report with bar charts",epilog="Copyright 2023")
   parser.add_argument("-l", "--length", type=int, default=20, help="Specify the length of the graph. Default is 20.")
 
-#Added argparse setup in parse_command_args() function
+  # Added argparse setup in parse_command_args() function
   parser.add_argument("-r", "--human-readable", action="store_true", help="Show memory in a human-readable format (e.g., MiB, GiB).")
 
   # Make this entry for human-readable. Check the docs to make it a True/False option.
@@ -17,7 +17,13 @@ def parse_command_args() -> object:
 
 def percent_to_graph(percent: float, length: int=20) -> str:
   "turns a percent 0.0 - 1.0 into a bar graph"
-  pass
+ 
+  # generate memory usage bar graph
+  bar_length = int(percent * length)
+  return "#" * bar_length + "-" * (length - bar_length)
+
+
+
 def get_sys_mem() -> int:
   "return total system memory (used or available) in kB"
   # open the meminfo file to accomplish the task!
