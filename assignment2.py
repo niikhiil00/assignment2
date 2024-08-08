@@ -40,11 +40,24 @@ def get_sys_mem() -> int:
 def get_avail_mem() -> int:
   "return total memory that is currently in use"
   # open the meminfo file to accomplish the task!
-  pass
+  with open('/proc/meminfo', 'r') as file:
+        for line in file:
+            if line.startswith('MemAvailable:'):
+                return int(line.split()[1])
+    return 0  
+
+
+
 def pids_of_prog(app_name: str) -> list:
   "given an app name, return all pids associated with app"
+
   # please use os.popen('pidof <app>') to accomplish the task!
-  pass
+  pids = os.popen(f'pidof {app_name}').read().strip()
+    return pids.split() if pids else []
+
+
+
+
 def rss_mem_of_pid(proc_id: str) -> int:
   "given a process id, return the Resident memory used"
   # for a process, open the smaps file and return the total of each
