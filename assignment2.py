@@ -105,6 +105,7 @@ if __name__ == "__main__":
         else:
             print(f"Memory Usage: {used_mem}kB/{total_mem}kB [{graph}]")
   else:
+    pids = pids_of_prog(args.program)
     total_rss = sum(rss_mem_of_pid(pid) for pid in pids)
             if args.human_readable:
                 total_rss = bytes_to_human_r(total_rss)
