@@ -86,9 +86,26 @@ def bytes_to_human_r(kibibytes: int, decimal_places: int=2) -> str:
   str_result = f'{result:.{decimal_places}f} '
   str_result += suffixes[suf_count]
   return str_result
+
+
+
 if __name__ == "__main__":
   args = parse_command_args()
+
   if not args.program: # not program name is specified.
-    pass
+    total_mem = get_sys_mem()
+        avail_mem = get_avail_mem()
+        used_mem = total_mem - avail_mem
+        used_percent = used_mem / total_mem
+        graph = percent_to_graph(used_percent, args.length)
+        if args.human_readable:
+            used_mem = bytes_to_human_r(used_mem)
+            total_mem = bytes_to_human_r(total_mem)
+            print(f"Memory Usage: {used_mem}/{total_mem} [{graph}]")
+        else:
+            print(f"Memory Usage: {used_mem}kB/{total_mem}kB [{graph}]")
   else:
-    pass
+    total_rss = sum(rss_mem_of_pid(pid) for pid in pids)
+            if args.human_readable:
+                total_rss = bytes_to_human_r(total_rss)
+            print(f"Total RSS Memory for '{args.program}': {total_rss}")
