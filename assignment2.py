@@ -32,7 +32,7 @@ def get_sys_mem() -> int:
         for line in file:
             if line.startswith('MemTotal:'):
                 return int(line.split()[1])
-    return 0
+  return 0
 
 
 
@@ -44,7 +44,7 @@ def get_avail_mem() -> int:
         for line in file:
             if line.startswith('MemAvailable:'):
                 return int(line.split()[1])
-    return 0  
+  return 0  
 
 
 
@@ -53,7 +53,7 @@ def pids_of_prog(app_name: str) -> list:
 
   # please use os.popen('pidof <app>') to accomplish the task!
   pids = os.popen(f'pidof {app_name}').read().strip()
-    return pids.split() if pids else []
+  return pids.split() if pids else []
 
 
 
@@ -63,14 +63,14 @@ def rss_mem_of_pid(proc_id: str) -> int:
   # for a process, open the smaps file and return the total of each
   # Rss line.
   rss_total = 0
-    try:
-        with open(f'/proc/{proc_id}/smaps', 'r') as file:
-            for line in file:
-                if line.startswith('Rss:'):
-                    rss_total += int(line.split()[1])
-    except FileNotFoundError:
-        pass
-    return rss_total  
+  try:
+      with open(f'/proc/{proc_id}/smaps', 'r') as file:
+          for line in file:
+              if line.startswith('Rss:'):
+                  rss_total += int(line.split()[1])
+  except FileNotFoundError:
+      pass
+  return rss_total  
 
 
 
@@ -93,20 +93,33 @@ if __name__ == "__main__":
   args = parse_command_args()
 
   if not args.program: # not program name is specified.
-    total_mem = get_sys_mem()
-        avail_mem = get_avail_mem()
-        used_mem = total_mem - avail_mem
-        used_percent = used_mem / total_mem
-        graph = percent_to_graph(used_percent, args.length)
-        if args.human_readable:
-            used_mem = bytes_to_human_r(used_mem)
-            total_mem = bytes_to_human_r(total_mem)
-            print(f"Memory Usage: {used_mem}/{total_mem} [{graph}]")
-        else:
-            print(f"Memory Usage: {used_mem}kB/{total_mem}kB [{graph}]")
+      total_mem = get_sys_mem()
+      avail_mem = get_avail_mem()
+      used_mem = total_mem - avail_mem
+      used_percent = used_mem / total_mem
+      graph = percent_to_graph(used_percent, args.length)
+      if args.human_readable:
+          used_mem = bytes_to_human_r(used_mem)
+          total_mem = bytes_to_human_r(total_mem)
+          print(f"Memory Usage: {used_mem}/{total_mem} [{graph}]")
+      else:
+          print(f"Memory Usage: {used_mem}kB/{total_mem}kB [{graph}]")
   else:
-    pids = pids_of_prog(args.program)
-    total_rss = sum(rss_mem_of_pid(pid) for pid in pids)
-            if args.human_readable:
-                total_rss = bytes_to_human_r(total_rss)
-            print(f"Total RSS Memory for '{args.program}': {total_rss}")
+      pids = pids_of_prog(args.program
+      #mproved how memory usage is converted to a human-readable format and displayed
+      for pid in pids:
+          rss = rss_mem_of_pid(pid)
+          total_mem = get_sys_mem()
+          used_percent = rss / total_mem
+          graph = percent_to_graph(used_percent, args.length)
+          if args.human_readable:
+              rss = bytes_to_human_r(rss)
+              total_mem = bytes_to_human_r(total_mem)
+              print(f"{pid:<10} [{graph}] {rss}/{total_mem}")
+          else:
+              print(f"{pid:<10} [{graph}] {rss}kB/{total_mem}kB")
+                          
+      total_rss = sum(rss_mem_of_pid(pid) for pid in pids)
+      if args.human_readable:
+          total_rss = bytes_to_human_r(total_rss)
+      print(f"Total RSS Memory for '{args.program}': {total_rss}")
